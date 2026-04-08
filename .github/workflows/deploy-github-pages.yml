@@ -25,8 +25,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.15.1
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -34,6 +32,26 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build static site
+        run: |
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+          pnpm vite build --base="/${REPO_NAME}/"
+          cp dist/public/index.html dist/public/404.html
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/public
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
