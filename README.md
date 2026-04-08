@@ -31,15 +31,19 @@ pnpm dev
 
 ## Google Sheets Integration (Contact Leads)
 
+Use the dedicated setup guide:
+`GOOGLE_CONTACT_AUTOMATION.md`
+
 1. Create a Google Sheet with headers in row 1:
 `submittedAt | source | name | email | shootType | preferredDate | message | pageUrl | userAgent`
 2. Open **Extensions → Apps Script**.
-3. Paste this script:
+3. Paste this script (writes to Sheets + sends you email):
 
 ```javascript
 function doPost(e) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
-  const data = JSON.parse(e.postData.contents || "{}");
+  const data = e.parameter || {};
+  const ownerEmail = "YOUR_EMAIL@gmail.com"; // TODO: replace with your email
 
   sheet.appendRow([
     data.submittedAt || new Date().toISOString(),
@@ -53,6 +57,22 @@ function doPost(e) {
     data.userAgent || "",
   ]);
 
+  const subject = `New Photography Lead: ${data.name || "Unknown"} (${data.shootType || "General"})`;
+  const body =
+    `You received a new contact lead.\n\n` +
+    `Name: ${data.name || ""}\n` +
+    `Email: ${data.email || ""}\n` +
+    `Type of Shoot: ${data.shootType || ""}\n` +
+    `Preferred Date: ${data.date || ""}\n` +
+    `Message: ${data.message || ""}\n` +
+    `Source: ${data.source || ""}\n` +
+    `Page URL: ${data.pageUrl || ""}\n` +
+    `Submitted At: ${data.submittedAt || ""}\n`;
+
+  if (ownerEmail && ownerEmail !== "YOUR_EMAIL@gmail.com") {
+    MailApp.sendEmail(ownerEmail, subject, body);
+  }
+
   return ContentService
     .createTextOutput(JSON.stringify({ success: true }))
     .setMimeType(ContentService.MimeType.JSON);
@@ -63,6 +83,7 @@ function doPost(e) {
 - `Execute as`: `Me`
 - `Who has access`: `Anyone`
 5. Copy the deployment URL and set `VITE_GOOGLE_APPS_SCRIPT_URL` in `.env` and in GitHub repository secret with the same name.
+6. Save script and **Deploy → Manage deployments → Edit (pencil) → New version → Deploy** whenever script changes.
 
 ## Deploy To GitHub Pages
 

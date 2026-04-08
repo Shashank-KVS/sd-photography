@@ -50,7 +50,11 @@ function ContactForm() {
       setForm({ name: "", email: "", shootType: "", date: "", message: "" });
     } catch (error) {
       console.error(error);
-      setErrorMessage("Could not send your request right now. Please try again in a minute.");
+      if (error instanceof Error && error.message === "CONTACT_FORM_NOT_CONFIGURED") {
+        setErrorMessage("Contact form is not configured yet. Add VITE_GOOGLE_APPS_SCRIPT_URL in .env and rebuild.");
+      } else {
+        setErrorMessage("Could not send your request right now. Please try again in a minute.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -258,11 +262,11 @@ export default function Contact() {
                       Email
                     </p>
                     <a
-                      href="mailto:hello@sdphotography.ca"
+                      href="mailto:photographyadss01@gmail.com"
                       className="text-white/70 hover:text-white text-sm transition-colors"
                       style={{ fontFamily: "'Outfit', sans-serif" }}
                     >
-                      hello@sdphotography.ca
+                      photographyadss01@gmail.com
                     </a>
                   </div>
                 </div>

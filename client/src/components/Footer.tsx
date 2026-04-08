@@ -83,12 +83,12 @@ export default function Footer() {
             </div>
             <div className="flex items-center gap-4 mt-3">
               <a
-                href="mailto:hello@sdphotography.ca"
+                href="mailto:photographyadss01@gmail.com"
                 className="flex items-center gap-2 text-white/40 hover:text-[#c9a84c] transition-colors text-xs"
                 style={{ fontFamily: "'Outfit', sans-serif" }}
               >
                 <Mail size={14} />
-                hello@sdphotography.ca
+                photographyadss01@gmail.com
               </a>
             </div>
           </div>
